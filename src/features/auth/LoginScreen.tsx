@@ -4,23 +4,44 @@ import PhoneInput from '@components/ui/PhoneInput';
 import SocialLogin from '@components/ui/SocialLogin';
 import {loginStyles} from '@unistyles/authStyles';
 import {resetAndNavigate} from '@utils/NavigationUtils';
-import React, {FC, useState} from 'react';
+import useKeyboardOffsetHeight from '@utils/useKeyboardOffsetHeight';
+import React, {FC, useEffect, useRef, useState} from 'react';
 import {
   ActivityIndicator,
+  Animated,
   Image,
   Platform,
   StatusBar,
   TouchableOpacity,
   View,
 } from 'react-native';
-import Animated from 'react-native-reanimated';
+
 import {useStyles} from 'react-native-unistyles';
 
 const LoginScreen: FC = () => {
+  const animatedValue = useRef(new Animated.Value(0)).current;
+  const keyboardOffsetHeight = useKeyboardOffsetHeight();
+
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
 
   const {styles} = useStyles(loginStyles);
+
+  useEffect(() => {
+    if (keyboardOffsetHeight === 0) {
+      Animated.timing(animatedValue, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      Animated.timing(animatedValue, {
+        toValue: -keyboardOffsetHeight * 0.25,
+        duration: 500,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [keyboardOffsetHeight]);
 
   const handleLogin = async () => {
     setLoading(true);
@@ -41,7 +62,8 @@ const LoginScreen: FC = () => {
         bounces={false}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode={'on-drag'}
-        contentContainerStyle={styles.bottomContainer}>
+        contentContainerStyle={styles.bottomContainer}
+        style={[{transform: [{translateY: animatedValue}]}]}>
         <CustomText fontFamily="Okra-Bold" variant="h2" style={styles.title}>
           India's #1 Food Delivery and Dining App
         </CustomText>
