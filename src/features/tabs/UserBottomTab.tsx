@@ -4,12 +4,14 @@ import LiveScreen from '@features/live/LiveScreen';
 import ReorderScreen from '@features/reorder/ReorderScreen';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React from 'react';
+import CustomTabBar from './CustomTabBar';
 
 const Tab = createBottomTabNavigator();
 
 const UserBottomTab = () => {
   return (
     <Tab.Navigator
+      tabBar={props => <CustomTabBar {...props} />}
       screenOptions={{
         headerShown: false,
         tabBarHideOnKeyboard: true,
